@@ -1,8 +1,9 @@
 const initDataRoute = require('./initData');   
-const cookingRoute = require('./cooking');     // Import cooking route
-
+const cookingRoute = require('./cooking');     
+const storageRoute = require('./storage');   
 
 module.exports = {
   initDataRoute,
-  cookingRoute
+  cookingRoute,
+  storageRoute
 };

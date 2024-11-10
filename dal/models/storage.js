@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {Status} = require('../../utils/enums')
+const {Status, StorageRejectionReasons} = require('../../utils/enums')
 
 const storageSchema = new mongoose.Schema({
   batch_id: {
@@ -38,7 +38,8 @@ const storageSchema = new mongoose.Schema({
   },
   rejection_reason: {
     type: String,
-    required: function() { return this.status=== Status.REJECTED; }
+    required: function() { return this.status=== Status.REJECTED; },
+    enum: Object.values(StorageRejectionReasons)
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

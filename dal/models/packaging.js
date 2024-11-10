@@ -7,6 +7,11 @@ const packagingSchema = new mongoose.Schema({
     ref: 'BatchGroup',
     required: true
   },
+  product_id:  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
   batch_group_expected_output: {
     type: Number,
     required: true

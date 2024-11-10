@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const app = express();
 const routes = require('./routes/initData')
 const cookingRoutes = require('./routes/cooking')
+const storageRoutes = require('./routes/storage')
 const PORT = process.env.PORT || 3000;
 
 mongoose.connect(process.env.DB_URI, {
@@ -15,6 +16,7 @@ mongoose.connect(process.env.DB_URI, {
 
 app.use('/', routes);
 app.use('/cooking', cookingRoutes);
+app.use('/storage', storageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
