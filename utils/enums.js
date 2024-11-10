@@ -17,4 +17,28 @@ const Status = {
   COMPLETED: 'completed'
 };
 
-module.exports = { Permissions, Status };
+const CookingRejectionReasons = {
+  TEMP_ERROR: 'temp_error',
+  TIME_DEVIATION: 'time_deviation',
+  CONTAMINATION: 'contamination',
+  UNDERWEIGHT: 'underweight',
+  OVERWEIGHT: 'overweight',
+  BAD_QUALITY: 'bad-quality'
+};
+
+const StorageRejectionReasons = {
+  TEMP_ERROR: 'temp_error',
+  HUMIDITY: 'humidity',
+  HANDLING: 'handling',
+  EXPIRED: 'expired',
+  OTHER: 'other'
+};
+
+const PackagingRejectionReasons = {
+  LABELING_ISSUE: 'labeling_issue',
+  PACKAGING_ISSUE: 'packaging_issue',
+  SEALING_FAILURE: 'sealing_failure',
+  NONCONFORMITY: 'nonconformity'
+};
+
+module.exports = { Permissions, Status, CookingRejectionReasons, StorageRejectionReasons, PackagingRejectionReasons };

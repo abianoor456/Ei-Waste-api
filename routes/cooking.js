@@ -2,6 +2,6 @@ const express = require('express');
 const cooking = require('../controllers/cooking');
 const router = express.Router();
 
-router.get('/', cooking.get);
+router.get('/getBatches', cooking.getBatchesByStatusAndDate);
 
 module.exports = router;

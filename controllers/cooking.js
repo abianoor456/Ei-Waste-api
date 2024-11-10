@@ -2,33 +2,52 @@ const Cooking = require('../dal/models/cooking');
 const Product = require('../dal/models/products');
 const moment = require('moment');
 
-const get = async (req, res) => {
+const getBatchesByStatusAndDate = async (req, res) => {
   try {
-    // Get date from query parameter, default to '2023-11' if not provided
-    const date = req.query.date || '2023-11';
+    const { startDate, endDate, product, status } = req.query;
 
-    // Parse date for start and end of the month
-    const startOfMonth = moment(date, 'YYYY-MM').startOf('month').toDate();
-    const endOfMonth = moment(date, 'YYYY-MM').endOf('month').toDate();
+    let dateFilter = {};
+    let statusFilter = {};
 
-    // Query with the date range filter
-    const data = await Cooking.find({
-      $or: [
-        { batch_date_in: { $gte: startOfMonth, $lt: endOfMonth } },
-        { batch_date_out: { $gte: startOfMonth, $lt: endOfMonth } }
-      ]
-    })
-    .populate({
-      path: 'batch_id',
-      populate: {
-        path: 'product_id',
-        model: 'Product'
-      }
-    });
+    // Date Filter
+    if (startDate && endDate) {
+      const start = moment.utc(startDate, 'YYYY-MM-DD').startOf('day').toDate();
+      const end = moment.utc(endDate, 'YYYY-MM-DD').endOf('day').toDate();
+      dateFilter = { updated_at: { $gte: start, $lte: end } }
+
+    }
+
+    // Status Filter
+    if (status) {
+      statusFilter = { status: status };
+    }
+
+    // Combine filters
+    const filters = {
+      ...dateFilter,
+      ...statusFilter
+    };
+
+    // Query with combined filters
+    let data = await Cooking.find(filters)
+      .populate({
+        path: 'batch_id',
+        populate: {
+          path: 'product_id',
+          model: 'Product'
+        }
+      });
+
+    if (product) {
+      data = data.filter(doc =>
+        doc.batch_id && doc.batch_id.product_id && doc.batch_id.product_id.name === product
+      );
+    }
 
     res.json({
       message: 'Data loaded successfully',
-      data: data
+      data: data,
+      count: data.length,
     });
 
   } catch (error) {
@@ -36,4 +55,5 @@ const get = async (req, res) => {
   }
 };
 
-module.exports = { get };
+
+module.exports = { getBatchesByStatusAndDate };

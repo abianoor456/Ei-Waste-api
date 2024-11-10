@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Status } = require('../../utils/enums');
+const { Status, CookingRejectionReasons } = require('../../utils/enums');
 
 const cookingSchema = new mongoose.Schema({
   batch_id: {
@@ -36,7 +36,8 @@ const cookingSchema = new mongoose.Schema({
   },
   rejection_reason: {
     type: String,
-    required: function() { return this.status=== Status.REJECTED; }
+    required: function() { return this.status=== Status.REJECTED; },
+    enum: Object.values(CookingRejectionReasons)
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
