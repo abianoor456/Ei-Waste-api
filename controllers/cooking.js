@@ -1,6 +1,7 @@
 const Cooking = require('../dal/models/cooking');
 const Product = require('../dal/models/products');
 const moment = require('moment');
+const { Status } = require('../utils/enums');
 
 const getBatchesByStatusAndDate = async (req, res) => {
   try {
@@ -55,5 +56,43 @@ const getBatchesByStatusAndDate = async (req, res) => {
   }
 };
 
+const getCapacity = async (req, res) => {
+  try {
+    const inProgressCookings = await Cooking.find({ status: Status.IN_PROGRESS });
+    const inProgressCount = inProgressCookings.length;
 
-module.exports = { getBatchesByStatusAndDate };
+    const currentTime = moment();
+    const inProgressData = inProgressCookings.map(cooking => {
+      const batchDateIn = moment(cooking.batch_date_in);
+      const predictedETA = moment(cooking.predicted_ETA);
+      const timeElapsed = batchDateIn.diff(currentTime);
+      const timeLeft = predictedETA.diff(timeElapsed)
+
+      return {
+        ...cooking.toObject(),
+        time_left: timeLeft > 0 ? timeLeft : 0,
+      };
+    });
+
+    const rejectedCookings = await Cooking.aggregate([
+      { $match: { status: Status.REJECTED } },
+      { $group: { _id: '$rejection_reason', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json({
+      message: 'Data loaded successfully',
+      data: {
+        inProgressCount,
+        inProgressData,
+        rejectedReasons: rejectedCookings,
+      },
+      count: inProgressData.length,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getBatchesByStatusAndDate , getCapacity};
