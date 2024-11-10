@@ -4,9 +4,12 @@ const moment = require('moment');
 
 const get = async (req, res) => {
   try {
+    // Get date from query parameter, default to '2023-11' if not provided
+    const date = req.query.date || '2023-11';
 
-    const startOfMonth = moment('2023-11', 'YYYY-MM').startOf('month').toDate();
-    const endOfMonth = moment('2023-11', 'YYYY-MM').endOf('month').toDate();
+    // Parse date for start and end of the month
+    const startOfMonth = moment(date, 'YYYY-MM').startOf('month').toDate();
+    const endOfMonth = moment(date, 'YYYY-MM').endOf('month').toDate();
 
     // Query with the date range filter
     const data = await Cooking.find({
@@ -15,13 +18,13 @@ const get = async (req, res) => {
         { batch_date_out: { $gte: startOfMonth, $lt: endOfMonth } }
       ]
     })
-      .populate({
-        path: 'batch_id',
-        populate: {
-          path: 'product_id',
-          model: 'Product'
-        }
-      });
+    .populate({
+      path: 'batch_id',
+      populate: {
+        path: 'product_id',
+        model: 'Product'
+      }
+    });
 
     res.json({
       message: 'Data loaded successfully',
